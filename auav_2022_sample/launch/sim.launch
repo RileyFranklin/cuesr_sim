@@ -61,8 +61,8 @@
     <!-- Launch local planner -->
     <node pkg="tf" type="static_transform_publisher" name="tf_fcu_link_camera"
       args="0 0 0 -1.57 0 -1.57 fcu camera_link 10"/>
-    <node pkg="tf2_ros" type="static_transform_publisher" name="tf_local_origin_map"
-      args="0 0 0 0 0 0 local_origin map"/>
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="tf_local_origin_map"-->
+      <!--args="0 0 0 0 0 0 local_origin map"/>-->
     <node pkg="tf2_ros" type="static_transform_publisher" name="tf_fcu_base_link"
       args="0 0 0 0 0 0 fcu base_link"/>
 
@@ -77,8 +77,8 @@
     </node>
 
     <include file="$(find rtabmap_ros)/launch/rtabmap.launch">
-      <arg name="args" default="delete_db_on_start"/>
-      <arg name="launch_prefix" default="xterm -e gdb --args"/>
+      <arg name="args" default="--delete_db_on_start"/>
+      <arg name="gdb" default="false"/>
       <arg name="odom_topic" default="/drone/odom_fix"/>
       <arg name="rgb_topic" default="/drone/camera/rgb/image_raw"/>
       <!--<arg name="rgb_topic" default="/drone/camera/rgb/image_rect_color"/>-->
