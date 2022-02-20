@@ -10,7 +10,7 @@ conn:
   heartbeat_rate: 1.0    # send hertbeat rate in Hertz
   timeout: 10.0          # hertbeat timeout in seconds
   timesync_rate: 10.0    # TIMESYNC rate in Hertz (feature disabled if 0.0)
-  system_time_rate: 1.0  # send system time to FCU rate in Hertz (disabled if 0.0)
+  system_time_rate: 1.0  # send system time to fcu rate in Hertz (disabled if 0.0)
 
 # sys_status
 sys:
@@ -34,7 +34,7 @@ tdr_radio:
 
 # command
 cmd:
-  use_comp_id_system_control: false # quirk for some old FCUs
+  use_comp_id_system_control: false # quirk for some old fcus
 
 # dummy
 # None
@@ -44,20 +44,20 @@ cmd:
 
 # global_position
 global_position:
-  frame_id: "map"             # origin frame
-  child_frame_id: "base_link" # body-fixed frame
+  frame_id: "local_origin"             # origin frame
+  child_frame_id: "fcu" # body-fixed frame
   rot_covariance: 99999.0   # covariance for attitude?
   gps_uere: 1.0             # User Equivalent Range Error (UERE) of GPS sensor (m)
   use_relative_alt: true    # use relative altitude for local coordinates
   tf:
     send: false               # send TF?
-    frame_id: "map"  # TF frame_id
+    frame_id: "local_origin"  # TF frame_id
     global_frame_id: "earth"  # TF earth frame_id
-    child_frame_id: "base_link" # TF child_frame_id
+    child_frame_id: "fcu" # TF child_frame_id
 
 # imu_pub
 imu:
-  frame_id: "base_link"
+  frame_id: "fcu"
   # need find actual values
   linear_acceleration_stdev: 0.0003
   angular_velocity_stdev: 0.0003490659 // 0.02 degrees
@@ -66,15 +66,15 @@ imu:
 
 # local_position
 local_position:
-  frame_id: "map"
+  frame_id: "local_origin"
   tf:
     send: true
-    frame_id: "map"
-    child_frame_id: "base_link"
+    frame_id: "local_origin"
+    child_frame_id: "fcu"
     send_fcu: false
 
 # param
-# None, used for FCU params
+# None, used for fcu params
 
 # rc_io
 # None
@@ -94,7 +94,7 @@ setpoint_attitude:
   use_quaternion: false     # enable PoseStamped topic subscriber
   tf:
     listen: false           # enable tf listener (disable topic subscribers)
-    frame_id: "map"
+    frame_id: "local_origin"
     child_frame_id: "target_attitude"
     rate_limit: 50.0
 
@@ -107,7 +107,7 @@ setpoint_raw:
 setpoint_position:
   tf:
     listen: false           # enable tf listener (disable topic subscribers)
-    frame_id: "map"
+    frame_id: "local_origin"
     child_frame_id: "target_position"
     rate_limit: 50.0
   mav_frame: LOCAL_NED
@@ -123,7 +123,7 @@ setpoint_velocity:
 mission:
   pull_after_gcs: true  # update mission if gcs updates
   use_mission_item_int: true # use the MISSION_ITEM_INT message instead of MISSION_ITEM
-                             # for uploading waypoints to FCU
+                             # for uploading waypoints to fcu
 
 # --- mavros extras plugins (same order) ---
 
@@ -189,7 +189,7 @@ fake_gps:
   tf:
     listen: false
     send: false           # send TF?
-    frame_id: "map"       # TF frame_id
+    frame_id: "local_origin"       # TF frame_id
     child_frame_id: "fix" # TF child_frame_id
     rate_limit: 10.0      # TF rate
   gps_rate: 5.0           # GPS data publishing rate
@@ -222,8 +222,8 @@ mocap:
 # odom
 odometry:
   fcu:
-    odom_parent_id_des: "map"    # desired parent frame rotation of the FCU's odometry
-    odom_child_id_des: "base_link"    # desired child frame rotation of the FCU's odometry
+    odom_parent_id_des: "local_origin"    # desired parent frame rotation of the fcu's odometry
+    odom_child_id_des: "fcu"    # desired child frame rotation of the fcu's odometry
 
 # px4flow
 px4flow:
@@ -247,7 +247,7 @@ vision_speed:
 
 # vibration
 vibration:
-  frame_id: "base_link"
+  frame_id: "fcu"
 
 # wheel_odometry
 wheel_odometry:
@@ -258,15 +258,15 @@ wheel_odometry:
   send_raw: true              # send wheel's RPM and cumulative distance (~/wheel_odometry/rpm, ~/wheel_odometry/distance)
   send_twist: false           # send geometry_msgs/TwistWithCovarianceStamped instead of nav_msgs/Odometry
   frame_id: "odom"             # origin frame
-  child_frame_id: "base_link" # body-fixed frame
+  child_frame_id: "fcu" # body-fixed frame
   vel_error: 0.1              # wheel velocity measurement error 1-std (m/s)
   tf:
     send: false
     frame_id: "odom"
-    child_frame_id: "base_link"
+    child_frame_id: "fcu"
 
 # camera
 camera:
-  frame_id: "base_link"
+  frame_id: "fcu"
 
 # vim:set ts=2 sw=2 et:

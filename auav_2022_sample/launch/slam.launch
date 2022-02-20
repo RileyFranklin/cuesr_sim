@@ -1,0 +1,13 @@
+<launch>
+  <include file="$(find rtabmap_ros)/launch/rtabmap.launch">
+    <arg name="launch_prefix" default="xterm -e gdb --args"/>
+    <arg name="odom_topic" default="/drone/mavros/odometry/in"/>
+    <arg name="rgb_topic" default="/drone/camera/rgb/image_raw"/>
+    <!--<arg name="rgb_topic" default="/drone/camera/rgb/image_rect_color"/>-->
+    <!--<arg name="depth_topic" default="/drone/camera/depth_registered/image_raw"/>-->
+    <arg name="visual_odometry" default="false"/>
+    <arg name="depth_topic" default="/drone/camera/depth/image_raw"/>
+    <arg name="camera_info_topic" default="/drone/camera/rgb/camera_info"/>
+    <arg name="depth_camera_info_topic" default="/drone/camera/rgb/camera_info"/>
+  </include>
+</launch>
