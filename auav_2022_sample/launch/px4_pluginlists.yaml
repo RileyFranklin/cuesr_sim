@@ -9,6 +9,7 @@ plugin_whitelist:
 - local_position
 - param
 - setpoint_position
+- setpoint_raw
 - altitude
 - time 
 #- waypoint
