@@ -1,6 +1,6 @@
 # AUAV 2022 Sample
 
-This is a sample PX4 based quadrotor path planning framework based on Ubuntu 20.04 and ROS noetic for the IEEE Autonomous UAS 2022 competition.
+This is a sample PX4 based quadrotor path planning framework based on Ubuntu 20.04 and ROS noetic for the IEEE Autonomous UAS 2022 competition(with additions to run slam simulations follow all of the steps below then use the launch files in cuesr_sim to test)
 
 You will need to install xterm and the standard PX4/gazebo requirements.
 ```bash

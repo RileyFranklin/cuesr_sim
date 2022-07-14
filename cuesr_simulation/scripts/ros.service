@@ -1,0 +1,12 @@
+[Unit]
+Description=Run ROS
+After=network.target
+
+[Service]
+Type=simple
+User=px4vision
+Group=px4vision
+ExecStart=/bin/bash -c "/home/px4vision/catkin/src/auav_2022_sample/auav_2022_sample/scripts/init.sh"
+
+[Install]
+WantedBy=default.target

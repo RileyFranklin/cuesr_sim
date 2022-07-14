@@ -1,0 +1,15 @@
+plugin_blacklist: []
+
+plugin_whitelist:
+- odom 
+- sys_status
+- command
+- trajectory
+- imu
+- local_position
+- param
+- setpoint_position
+- altitude
+- time
+- vision_pose_estimate 
+#- waypoint

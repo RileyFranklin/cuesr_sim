@@ -1,0 +1,116 @@
+<launch>
+  <arg name="vehicle" default="drone"/>
+
+  <arg name="with_record" default="false"/>
+
+  <group if="$(arg with_record)">
+    <node name="record" pkg="rosbag" type="record" args="-a"/>
+  </group>
+
+  <!--qualisys-->
+  <node pkg="qualisys" type="node" name="qualisys" output="screen">
+    <param name="server" value="192.168.123.202"/>
+    <param name="rate_limit" value="10"/>
+    <param name="parent_frame" value="odom"/>
+  </node>
+
+
+  <!-- start drone  -->
+  <group ns="drone" clear_params="true">
+
+    <!--topic relay for mocap-->
+    <node pkg="topic_tools" type="relay" name="relay" output="log" args="/qualisys/drone/odom /drone/mavros/odometry/out"/>
+
+    <!-- tf frames -->
+    <node name="tf_base_link_camera" pkg="tf2_ros" type="static_transform_publisher"
+      args="0 0 0 0 0 0 base_link camera_link"/>
+    <node name="tf_base_link_drone" pkg="tf2_ros" type="static_transform_publisher"
+      args="0 0 0 0 0 0 base_link drone"/>
+
+    <!--qualiysis -->
+    <!--<node name="odom_to_tf" pkg="auav_2022_sample" type="odom_to_tf.py" output="log">-->
+      <!--<remap from="odom" to="/qualisys/drone/odom"/>-->
+      <!--<param name="child_frame_override" value="base_link"/>-->
+      <!--<param name="parent_frame_override" value="odom"/>-->
+    <!--</node>-->
+
+    <!-- mavros -->
+    <node pkg="mavros" type="mavros_node" name="mavros" required="true" clear_params="true" output="log" respawn="false">
+      <param name="fcu_url" value="/dev/ttyUSB0:921600" />
+      <param name="gcs_url" value="" />
+      <param name="target_system_id" value="1" />
+      <param name="target_component_id" value="1" />
+      <param name="fcu_protocol" value="v2.0" />
+      <!-- load blacklist, config -->
+      <rosparam command="load" file="$(find auav_2022_sample)/launch/px4_pluginlists.yaml" />
+      <rosparam command="load" file="$(find auav_2022_sample)/launch/px4_config.yaml" />
+    </node>
+
+    <!-- launch realsense camera node -->
+    <arg name="serial_no"             default=""/>
+    <arg name="json_file_path"        default=""/>
+    <arg name="camera"                default="camera"/>
+
+    <group ns="$(arg camera)">
+      <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
+        <arg name="serial_no"         value="$(arg serial_no)"/>
+        <arg name="json_file_path"    value="$(arg json_file_path)"/>
+        <arg name="depth_width"       value="640"/>
+        <arg name="depth_height"      value="480"/>
+        <arg name="depth_fps"         value="6"/>
+        <arg name="color_width"       value="640"/>
+        <arg name="color_height"      value="480"/>
+        <arg name="color_fps"         value="6"/>
+        <arg name="enable_depth"      value="true"/>
+        <arg name="enable_color"      value="true"/>
+        <arg name="enable_infra1"     value="false"/>
+        <arg name="enable_infra2"     value="false"/>
+        <arg name="enable_fisheye"    value="false"/>
+        <arg name="enable_gyro"       value="false"/>
+        <arg name="enable_accel"      value="false"/>
+        <arg name="enable_pointcloud" value="true"/>
+        <arg name="enable_sync"       value="true"/>
+        <arg name="tf_prefix"         value="$(arg camera)"/>
+      </include>
+    </group>
+
+   
+    <!-- Launch object tracking node -->
+    <!-- <node name="color_tracking" pkg="auav_2022_sample" type="color_tracking.py"/> -->
+    <node name="object_tracking" pkg="object_tracking" type="object_tracking_node"/> 
+
+    <!-- Launch dodgy python conversion -->
+    <node name="quat_to_cam_info" pkg="auav_2022_sample" type="quat_to_cam_info.py"/>
+
+    <!-- Launch roi to point node -->
+    <node name="roi_to_point" pkg="auav_2022_sample" type="roi_to_point.py"/>
+
+    <!-- Launch offboard node -->
+    <node name="offboard_node" pkg="auav_2022_sample" type="offboard.py"/>
+
+    <!-- Launch octomap server node -->
+    <node pkg="octomap_server" type="octomap_server_node" name="octomap_server" output="log" launch-prefix="bash -c 'sleep 20; $0 $@'">
+      <param name="base_frame_id" value="base_link"/>
+      <remap from="cloud_in" to="camera/depth/color/points"/>
+      <param name="resolution" value="0.1"/>
+      <param name="frame_id" type="string" value="map"/>
+      <param name="sensor_model/max_range" value="4.0"/>
+      <param name="sensor_model/hit" value="0.7"/>
+      <param name="sensor_model/miss" value="0.4"/>
+      <param name="sensor_model/min" value="0.12"/>
+      <param name="sensor_model/max" value="0.97"/>
+
+      <!--Ground Filter-->
+      <!--<param name="filter_ground" value="true"/>-->
+      <!--<param name="ground_filter/distance" value="0.3"/>-->
+
+      <!--Alternative is to cut points without using filter if cpu low-->
+      <param name="pointcloud_min_z" value="0.5"/>
+      <param name="pointcloud_max_z" value="2.15"/>
+    </node>
+
+  </group>
+
+</launch>
+
+<!-- vim set ft=xml ts=2 sw=2 et: -->
