@@ -21,7 +21,7 @@
   <arg name="verbose" default="true"/>
   <arg name="paused" default="false"/>
   <arg name="interactive" default="false"/>
-  <arg name="world" default="$(find auav_2022_sample)/worlds/collapsed.world"/>
+  <arg name="world" default="$(find cuesr_simulation)/worlds/collapsed.world"/>
   <arg name="lockstep" default="true"/>
 
   <!--gazebo-->
@@ -65,8 +65,8 @@
       <param name="target_system_id" value="1" />
       <param name="target_component_id" value="1" />
       <param name="fcu_protocol" value="v2.0" />
-      <rosparam command="load" file="$(find auav_2022_sample)/launch/px4_pluginlists.yaml" />
-      <rosparam command="load" file="$(find auav_2022_sample)/launch/px4_config.yaml" />
+      <rosparam command="load" file="$(find cuesr_simulation)/launch/px4_pluginlists.yaml" />
+      <rosparam command="load" file="$(find cuesr_simulation)/launch/px4_config.yaml" />
     </node>
 
 
@@ -84,7 +84,7 @@
     </group>
 
     <!-- Launch offboard node -->
-    <node name="offboard_node" pkg="auav_2022_sample" type="offboard.py" output="screen" launch-prefix="xterm -T 'offboard' -e">
+    <node name="offboard_node" pkg="cuesr_simulation" type="offboard.py" output="screen" launch-prefix="xterm -T 'offboard' -e">
       <remap from="rover_finished" to="rover/finished"/>
     </node>
 
@@ -102,8 +102,8 @@
 
     <!-- Launch object tracking node -->
     <group if="$(arg with_color_tracking)">
-      <node name="color_tracking" pkg="auav_2022_sample" type="color_tracking.py" output="log"/>
-      <node name="roi_to_point" pkg="auav_2022_sample" type="roi_to_point.py" output="log"/>
+      <node name="color_tracking" pkg="cuesr_simulation" type="color_tracking.py" output="log"/>
+      <node name="roi_to_point" pkg="cuesr_simulation" type="roi_to_point.py" output="log"/>
     </group>
 
     <group if="$(arg with_octomap)">
