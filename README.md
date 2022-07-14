@@ -14,7 +14,7 @@ mkidr ~/catkin
 cd ~/catkin
 mkdir src
 cd src
-git clone https://github.com/jgoppert/auav_2022_sample.git
+git clone git@github.com:RileyFranklin/cuesr_sim.git
 git submodule update --init --recursive
 catkin build
 ```
